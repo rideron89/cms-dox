@@ -102,14 +102,16 @@
     *, *:before, *:after
         box-sizing: border-box
 
-    html, body, button, input, select, textarea
+    html, body
         font-family: 'Nunito', Helvetica, Arial, sans-serif
         font-size: 16px
         line-height: 1.6
-
-    html, body
         margin: 0 auto
         padding: 0
+
+    button, input, select, textarea
+        font: inherit
+        line-height: inherit
 
     h1, h2, h3, h4, h5, p, ol, ul
         margin: 20px auto 15px
@@ -160,4 +162,12 @@
     #TitlesPane
         flex: 0 0 auto
         overflow: auto
+
+    @media (max-width: 1024px)
+        pre
+            white-space: normal
+
+    @media (max-width: 768px)
+        html, body
+            font-size: 14px
 </style>

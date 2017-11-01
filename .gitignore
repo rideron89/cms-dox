@@ -1,0 +1,6 @@
+data/*.sqlite
+data/*.xml
+node_modules/
+public/*.css
+public/*.js
+public/*.map

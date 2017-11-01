@@ -1,0 +1,39 @@
+{
+    "name": "wp-doc",
+    "version": "1.0.0",
+    "description": "Documentation viewer for WordPress.",
+    "main": "server.js",
+    "scripts": {
+        "build": "cross-env NODE_ENV=production webpack --progress",
+        "dev": "cross-env NODE_ENV=development webpack --progress --watch",
+        "postinstall": "npm run build && npm install express",
+        "start": "node server.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "wordpress"
+    ],
+    "author": "Ron Rider <rideron89@gmail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "axios": "^0.17.0",
+        "babel-core": "^6.26.0",
+        "babel-loader": "^7.1.2",
+        "babel-preset-env": "^1.6.1",
+        "cross-env": "^5.1.1",
+        "css-loader": "^0.28.7",
+        "express": "^4.16.2",
+        "extract-text-webpack-plugin": "^3.0.2",
+        "file-loader": "^1.1.5",
+        "lodash.debounce": "^4.0.8",
+        "markdown": "^0.5.0",
+        "node-sass": "^4.5.3",
+        "sass-loader": "^6.0.6",
+        "sqlite3": "^3.1.13",
+        "store": "^2.0.12",
+        "vue": "^2.5.2",
+        "vue-loader": "^13.3.0",
+        "vue-template-compiler": "^2.5.2",
+        "webpack": "^3.8.1"
+    }
+}

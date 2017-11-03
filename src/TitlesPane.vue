@@ -5,13 +5,26 @@
         </span>
 
         <div class="content">
-            <input type="search" @input="changeQuery" />
+            <input type="search" :value="query" @input="changeQuery" />
 
             <hr />
 
+            <label class="titlesList-label">Actions</label>
             <ul class="titlesList" @click="selectTitle">
-                <li v-for="title in filtered_titles" :key="title" :data-title="title"
-                    :class="{ 'titlesList-item': true, 'active': title === selectedTitle }">{{ title }}</li>
+                <li v-for="action in filtered_actions" :key="action"
+                    :class="{ 'titlesList-item': true, 'active': ('actions' === route_table) && (action === selected_title) }">
+                    <a :href="'/actions/' + action" data-table="actions" :data-title="action">{{ action }}</a>
+                </li>
+            </ul>
+
+            <br />
+
+            <label class="titlesList-label">Functions</label>
+            <ul class="titlesList" @click="selectTitle">
+                <li v-for="func in filtered_functions" :key="func"
+                    :class="{ 'titlesList-item': true, 'active': ('functions' === route_table) && (func === selected_title) }">
+                    <a :href="'/functions/' + func"  data-table="functions" :data-title="func">{{ func }}</a>
+                </li>
             </ul>
         </div>
     </section>
@@ -23,22 +36,38 @@
     export default {
         name: 'titles-pane',
 
-        props: ['selectedTitle', 'titles'],
+        props: ['titles'],
 
         data () {
             return {
                 expand_menu: false,
+                route_table: (this.$route.params) ? this.$route.params.table : null,
+                selected_title: (this.$route.params) ? this.$route.params.title : null,
                 query: ''
             }
         },
 
         computed: {
-            filtered_titles: function() {
-                if (this.query) {
-                    return this.titles.filter(t => t.toLowerCase().indexOf(this.query.toLowerCase()) !== -1)
-                } else {
-                    return this.titles
-                }
+            filtered_actions: function() {
+                return this.titles.actions.filter(a => {
+                    return a.toLowerCase().indexOf(this.query.toLowerCase()) !== -1
+                }) || this.titles.actions
+            },
+
+            filtered_functions: function() {
+                return this.titles.functions.filter(a => {
+                    return a.toLowerCase().indexOf(this.query.toLowerCase()) !== -1
+                }) || this.titles.functions
+            }
+        },
+
+        watch: {
+            '$route': function(to, from) {
+                let params = to.params || {}
+
+                this.route_table = params.table
+
+                this.selected_title = params.title
             }
         },
 
@@ -48,11 +77,17 @@
             }, 150),
 
             selectTitle: function(ev) {
-                if (undefined !== ev.target.dataset.title) {
+                ev.preventDefault()
+
+                let table = ev.target.dataset.table
+                let title = encodeURIComponent(ev.target.dataset.title)
+
+                if (table && title) {
                     this.expand_menu = false
+
                     document.getElementById('TitlesPane').scrollTop = 0
 
-                    this.$emit('selectTitle', ev.target.dataset.title)
+                    this.$router.push({ path: `/${table}/${title}` })
                 }
             }
         }
@@ -112,6 +147,14 @@
             margin: 0 auto
             padding: 0
 
+            &-label
+                color: #888
+                display: block
+                font-weight: 700
+                letter-spacing: 0.015em
+                margin: 0 0 5px
+                text-transform: uppercase
+
             &-item
                 cursor: pointer
                 margin: 0 auto
@@ -120,6 +163,12 @@
 
                 &.active, &:hover
                     color: #03A9F4
+
+                a, a:active, a:focus, a:hover
+                    box-shadow: none
+                    color: inherit
+                    display: block
+                    text-decoration: inherit
 
         @media (max-width: 1023px)
             overflow: hidden

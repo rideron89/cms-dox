@@ -1,8 +1,8 @@
 <template>
     <div id="App">
-        <titles-pane :selected-title="selected_title" :titles="titles" @selectTitle="(title) => selected_title = title"></titles-pane>
+        <titles-pane :titles="titles"></titles-pane>
 
-        <details-pane :title="selected_title" :content="selected_content"></details-pane>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -10,86 +10,44 @@
     import axios from 'axios'
     import store from 'store'
 
-    import DetailsPane from './DetailsPane.vue'
     import TitlesPane from './TitlesPane.vue'
 
     export default {
         name: 'app',
 
         components: {
-            DetailsPane,
             TitlesPane
         },
 
         data () {
             return {
-                query: '',
-                selected_content: null,
-                selected_title: null,
-                titles: []
-            }
-        },
-
-        watch: {
-            selected_title: function(title) {
-                let cached = store.get('cached')
-                let cached_item = cached.filter(row => row.title === title)
-
-                // if the requested title is in the cache, load it from there
-                if (cached_item.length) {
-                    return this.selected_content = cached_item[0].content
-                }
-
-                axios('/api/title/' + encodeURIComponent(title)).then(response => {
-                    if (!response.data.error) {
-                        this.selected_content = response.data.data.content
-
-                        // update the cached data
-                        cached.push({ title: title, content: response.data.data.content })
-                        store.set('cached', cached.slice(0, 20))
-                    }
-                })
+                titles: { actions: [], functions: [] }
             }
         },
 
         mounted () {
-            // setup cached titles storage
-            if (undefined == store.get('cached_titles')) {
-                store.set('cached_titles', {})
-            }
-
-            // setup cached data storage
-            if (undefined === store.get('cached')) {
-                store.set('cached', [])
-            }
-
             this.loadTitles()
         },
 
         methods: {
             loadTitles: function() {
-                let cached_titles = store.get('cached_titles')
+                let cached_titles = store.get('cached_titles') || {}
                 let age = (Date.now() - parseInt(cached_titles.last_updated)) / 1000
 
-                if (isNaN(age) || (age > 3600)) {
+                if (isNaN(age) || age > 3600) {
                     axios('/api/titles').then(response => {
-                        if (!response.data.error) {
-                            this.titles = response.data.data
-
-                            this.selected_title = this.titles[0]
-
-                            cached_titles = {
-                                last_updated: Date.now(),
-                                titles: this.titles
-                            }
-
-                            store.set('cached_titles', cached_titles)
+                        if (response.data.error) {
+                            return console.log(response.data.data)
                         }
+
+                        cached_titles = { load_updated: Date.now(), titles: response.data.data }
+
+                        store.set('cached_titles', cached_titles)
+
+                        this.titles = cached_titles.titles
                     })
                 } else {
-                    this.titles = cached_titles.titles
-
-                    this.selected_title = this.titles[0]
+                    this.titles = cached_titles
                 }
             }
         }
@@ -108,6 +66,15 @@
         line-height: 1.6
         margin: 0 auto
         padding: 0
+
+    a
+        box-shadow: inset 0px -1px 0px 0px currentColor
+        color: #03A9F4
+        text-decoration: none
+        transition: all 0.125s ease
+
+        &:hover
+            box-shadow: inset 0px 0px 0px 0px currentColor
 
     button, input, select, textarea
         font: inherit
@@ -146,15 +113,17 @@
         padding: 6px 8px
         width: 100%
 
-    tt
+    pre, tt
         font-family: 'Source Code Pro'
-        font-size: inherit
+        font-size: 12px
         line-height: inherit
+        white-space: pre-wrap
 
     #App
         display: flex
         height: 100vh
 
+    #HistoryPane,
     #DetailsPane
         flex: auto
         overflow: auto

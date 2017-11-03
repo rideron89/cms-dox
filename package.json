@@ -1,7 +1,7 @@
 {
-    "name": "wp-doc",
+    "name": "cms-dox",
     "version": "1.0.0",
-    "description": "Documentation viewer for WordPress.",
+    "description": "Single-page app for browsing various CMS library documentation, much like the incredible.",
     "main": "server.js",
     "scripts": {
         "build": "cross-env NODE_ENV=production webpack --progress",
@@ -20,6 +20,7 @@
         "babel-core": "^6.26.0",
         "babel-loader": "^7.1.2",
         "babel-preset-env": "^1.6.1",
+        "connect-history-api-fallback": "^1.4.0",
         "cross-env": "^5.1.1",
         "css-loader": "^0.28.7",
         "express": "^4.16.2",
@@ -33,6 +34,7 @@
         "store": "^2.0.12",
         "vue": "^2.5.2",
         "vue-loader": "^13.3.0",
+        "vue-router": "^3.0.1",
         "vue-template-compiler": "^2.5.2",
         "webpack": "^3.8.1"
     }

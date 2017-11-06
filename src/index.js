@@ -8,8 +8,6 @@ import HistoryPane from './HistoryPane.vue'
 
 Vue.use(VueRouter)
 
-window.$Vue = Vue
-
 const app = new Vue({
     el: '#App',
 

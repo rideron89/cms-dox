@@ -41,6 +41,14 @@
         },
 
         methods: {
+            addToCached: function(table, title, content) {
+                let cached = (store.get('cached') || []).filter(r => title !== r.title)
+
+                cached.push({ table: table, title: title, content: content })
+
+                store.set('cached', cached.slice(0, 30))
+            },
+
             addToHistory: function(table, title) {
                 let history = (store.get('history') || []).filter(h => {
                     return !(h.title === title && h.table === table)
@@ -51,7 +59,9 @@
             },
 
             loadTitle: function(table, title) {
-                let cached  = (store.get('cached') || []).filter(r => title === r.title)[0]
+                let cached  = (store.get('cached') || []).filter(r => {
+                    return (title === r.title) && (table === r.table)
+                })[0]
 
                 if (cached) {
                     this.content = cached.content
@@ -63,6 +73,8 @@
                 axios(`/api/${table}/${title}`).then(response => {
                     this.content = response.data.data.content
                     this.title   = title
+
+                    this.addToCached(table, title, response.data.data.content)
                 })
 
                 this.addToHistory(table, title)

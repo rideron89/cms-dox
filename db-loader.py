@@ -11,6 +11,14 @@ def parseContent(input):
     # convert to utf-8
     output = ''.join([i if ord(i) < 128 else ' ' for i in input])
 
+    # remove unnecessary sections
+    output = re.sub(r'{{Languages\|\s({{[^}]+}}\s?)+\s*}}(\r\n|\r|\n)*', '', output, flags=re.M)
+
+    # convert source links
+    matches = re.search(r'{{#dotorgredirect: ([^}]+)}}(\r\n|\r|\n)*', output)
+    if matches:
+        output = output.replace(matches.group(0), '<sub>Source: <a href={0} target="_blank">{0}</a></sub><br />'.format(matches.group(1)))
+
     # replace characters that might interfere with database storage
     output = output.replace('\n;', '\n')
     output = output.replace('\'', '&#39;')
@@ -81,7 +89,7 @@ def saveToDB(table_name, data):
     conn.commit()
     conn.close()
 
-def main(table_name, input_file):
+def load(table_name, input_file):
     tree = ET.parse(input_file)
     root = tree.getroot()
 
@@ -91,11 +99,18 @@ def main(table_name, input_file):
 
     return data
 
-if __name__ == '__main__':
-    print 'Loading from "{0}" into table `{1}`...'.format(sys.argv[2], sys.argv[1])
+def main(table_name, input_file):
+    print 'Loading from "{0}" into table `{1}`...'.format(input_file, table_name)
 
     start = getTime()
-    data  = main(sys.argv[1], sys.argv[2])
+    data  = load(table_name, input_file)
     end   = getTime()
 
     print 'Done. Generated {0} pages in {1}s'.format(len(data), (end - start) / 1000.0)
+
+if __name__ == '__main__':
+    main('actions', 'data/Actions-2017-11-02.xml')
+
+    print ''
+
+    main('functions', 'data/Functions-2017-10-30.xml')

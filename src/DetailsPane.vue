@@ -54,7 +54,7 @@
                     return !(h.title === title && h.table === table)
                 })
 
-                history.unshift({ table: table, title: title, time: Date.now() })
+                history.unshift({ table: table, title: title, time: Date.now() / 1000 })
                 store.set('history', history.slice(0, 20))
             },
 
@@ -66,16 +66,14 @@
                 if (cached) {
                     this.content = cached.content
                     this.title   = cached.title
+                } else {
+                    axios(`/api/${table}/${title}`).then(response => {
+                        this.content = response.data.data.content
+                        this.title   = title
 
-                    return
+                        this.addToCached(table, title, response.data.data.content)
+                    })
                 }
-
-                axios(`/api/${table}/${title}`).then(response => {
-                    this.content = response.data.data.content
-                    this.title   = title
-
-                    this.addToCached(table, title, response.data.data.content)
-                })
 
                 this.addToHistory(table, title)
             }

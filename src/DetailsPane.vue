@@ -32,6 +32,10 @@
             }
         },
 
+        updated () {
+            document.getElementById('DetailsPane').scrollTop = 0
+        },
+
         watch: {
             '$route': function(to, from) {
                 if (to.params && to.params.table && to.params.title) {

@@ -21,22 +21,38 @@
 
         data () {
             return {
+                // string: HTML for the action/function content section
                 content: '<div>Nothing</div>',
-                title: null
+
+                // string: string for the action/function title
+                title: ''
             }
         },
 
+        /**
+        * When the component is mounted, load the data for the title if the table and title is
+        * found in the URL path.
+        */
         mounted () {
             if (this.$route.params && this.$route.params.table && this.$route.params.title) {
                 this.loadTitle(this.$route.params.table, this.$route.params.title)
             }
         },
 
+        /**
+        * When the component is updated, force scroll the pane back to the top.
+        */
         updated () {
             document.getElementById('DetailsPane').scrollTop = 0
         },
 
         watch: {
+            /**
+            * When the `$route` object is changed, load a title if it is in the URL path.
+            *
+            * @param to: route object
+            * @param from: route object
+            */
             '$route': function(to, from) {
                 if (to.params && to.params.table && to.params.title) {
                     this.loadTitle(to.params.table, to.params.title)
@@ -45,6 +61,13 @@
         },
 
         methods: {
+            /**
+            * Add the title and its content to the cache.
+            *
+            * @param table: string
+            * @param title: string
+            * @param content: string
+            */
             addToCached: function(table, title, content) {
                 let cached = (store.get('cached') || []).filter(r => title !== r.title)
 
@@ -53,6 +76,12 @@
                 store.set('cached', cached.slice(0, 30))
             },
 
+            /**
+            * Add the title to the history list.
+            *
+            * @param table: string
+            * @param title: string
+            */
             addToHistory: function(table, title) {
                 let history = (store.get('history') || []).filter(h => {
                     return !(h.title === title && h.table === table)
@@ -62,6 +91,14 @@
                 store.set('history', history.slice(0, 20))
             },
 
+            /**
+            * Try loading the content for a title by checking the cache. If the title wasn't found
+            * then request the content from the server, and then add it to the cache. Add the
+            * title to the history list.
+            *
+            * @param table: string
+            * @param title: string
+            */
             loadTitle: function(table, title) {
                 let cached  = (store.get('cached') || []).filter(r => {
                     return (title === r.title) && (table === r.table)

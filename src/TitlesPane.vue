@@ -40,20 +40,37 @@
 
         data () {
             return {
+                // boolean: true if the mobile menu should be shown, false otherwise
                 expand_menu: false,
+
+                // string: table name found in the URL path
                 route_table: (this.$route.params) ? this.$route.params.table : null,
+
+                // string: title found in the URL path
                 selected_title: (this.$route.params) ? this.$route.params.title : null,
+
+                // string: search query
                 query: ''
             }
         },
 
         computed: {
+            /**
+            * Return a list of action titles that match the search query.
+            *
+            * @return array
+            */
             filtered_actions: function() {
                 return this.titles.actions.filter(a => {
                     return a.toLowerCase().indexOf(this.query.toLowerCase()) !== -1
                 }) || this.titles.actions
             },
 
+            /**
+            * Return a list of function titles that match the search query.
+            *
+            * @return array
+            */
             filtered_functions: function() {
                 return this.titles.functions.filter(a => {
                     return a.toLowerCase().indexOf(this.query.toLowerCase()) !== -1
@@ -62,6 +79,12 @@
         },
 
         watch: {
+            /**
+            * When the `$route` object changes, set the selected table and title.
+            *
+            * @param to: route object
+            * @param from: route object
+            */
             '$route': function(to, from) {
                 let params = to.params || {}
 
@@ -72,10 +95,20 @@
         },
 
         methods: {
+            /**
+            * A debounced function that updates the component `query`.
+            *
+            * @param ev: EventObject
+            */
             changeQuery: debounce(function(ev) {
                 this.query = ev.target.value
             }, 150),
 
+            /**
+            * Update the URL when a title is selected.
+            *
+            * @param ev: EventObject
+            */
             selectTitle: function(ev) {
                 ev.preventDefault()
 

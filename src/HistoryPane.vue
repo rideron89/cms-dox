@@ -26,11 +26,17 @@
 
         data () {
             return {
+                // list of history titles
                 history: store.get('history') || []
             }
         },
 
         computed: {
+            /**
+            * Sort the history list by `time`, in descending order.
+            *
+            * @return array
+            */
             sorted_history: function() {
                 return this.history.sort((a, b) => {
                     if (a.time === b.time) {

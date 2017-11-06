@@ -21,15 +21,23 @@
 
         data () {
             return {
+                // object: list of all titles, grouped as `actions` or `functions`
                 titles: { actions: [], functions: [] }
             }
         },
 
+        /**
+        * When the app is mounted, load the list of all titles.
+        */
         mounted () {
             this.loadTitles()
         },
 
         methods: {
+            /**
+            * Try loading a list of titles without content by checking the cache. If the cache
+            * was not found or older than 60 minutes, request a new list of titles.
+            */
             loadTitles: function() {
                 let cached_titles = store.get('cached_titles') || {}
                 let age = (Date.now() - parseInt(cached_titles.last_updated)) / 1000

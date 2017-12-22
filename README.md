@@ -2,6 +2,8 @@
 
 Single-page app for browsing various CMS library documentation, much like the incredible [DevDocs](http://devdocs.io/).
 
+Demo: http://cms-dox.herokuapp.com/
+
 ## Building a database
 
 Instructions for building databases can be reviewed in the sections below.
